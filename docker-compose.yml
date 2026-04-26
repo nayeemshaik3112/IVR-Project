@@ -1,0 +1,171 @@
+services:
+  mysql-customer:
+    image: mysql:8.3
+    container_name: mysql-customer
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: customerdb
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_customer_data:/var/lib/mysql
+
+  mysql-policy:
+    image: mysql:8.3
+    container_name: mysql-policy
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: policydb
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql_policy_data:/var/lib/mysql
+
+  mysql-claims:
+    image: mysql:8.3
+    container_name: mysql-claims
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: claimsdb
+    ports:
+      - "3309:3306"
+    volumes:
+      - mysql_claims_data:/var/lib/mysql
+
+  mysql-notification:
+    image: mysql:8.3
+    container_name: mysql-notification
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: notificationdb
+    ports:
+      - "3310:3306"
+    volumes:
+      - mysql_notification_data:/var/lib/mysql
+
+  mysql-orchestrator:
+    image: mysql:8.3
+    container_name: mysql-orchestrator
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ivrdb
+    ports:
+      - "3311:3306"
+    volumes:
+      - mysql_orchestrator_data:/var/lib/mysql
+
+  mysql-eligibility:
+    image: mysql:8.3
+    container_name: mysql-eligibility
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: eligibilitydb
+    ports:
+      - "3312:3306"
+    volumes:
+      - mysql_eligibility_data:/var/lib/mysql
+
+  mysql-communication-preference:
+    image: mysql:8.3
+    container_name: mysql-communication-preference
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: communicationdb
+    ports:
+      - "3313:3306"
+    volumes:
+      - mysql_communication_preference_data:/var/lib/mysql
+
+  mysql-ivr-session:
+    image: mysql:8.3
+    container_name: mysql-ivr-session
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ivrsessiondb
+    ports:
+      - "3314:3306"
+    volumes:
+      - mysql_ivr_session_data:/var/lib/mysql
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.4
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.4
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  axon-server:
+    image: axoniq/axonserver:2024.1.2
+    container_name: axon-server
+    hostname: axon-server
+    ports:
+      - "8024:8024"
+      - "8124:8124"
+    environment:
+      AXONIQ_AXONSERVER_STANDALONE: "true"
+    volumes:
+      - axon_data:/axonserver/data
+      - axon_events:/axonserver/events
+
+  zipkin:
+    image: openzipkin/zipkin:3.1.0
+    container_name: zipkin
+    ports:
+      - "9411:9411"
+
+  prometheus:
+    image: prom/prometheus:v2.52.0
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - zipkin
+
+  grafana:
+    image: grafana/grafana:10.4.2
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+
+volumes:
+  mysql_customer_data:
+  mysql_policy_data:
+  mysql_claims_data:
+  mysql_notification_data:
+  mysql_orchestrator_data:
+  mysql_eligibility_data:
+  mysql_communication_preference_data:
+  mysql_ivr_session_data:
+  axon_data:
+  axon_events:
+  grafana_data:

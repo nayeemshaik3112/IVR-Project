@@ -1,0 +1,943 @@
+{
+  "info": {
+    "_postman_id": "1b9d9c2d-9f9a-4a11-a100-ivrbackend0001",
+    "name": "IVR Backend System",
+    "description": "Postman collection for the Spring Boot IVR backend via API Gateway and direct service URLs.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "gatewayBaseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "orchestratorBaseUrl",
+      "value": "http://localhost:8081"
+    },
+    {
+      "key": "customerBaseUrl",
+      "value": "http://localhost:8082"
+    },
+    {
+      "key": "policyBaseUrl",
+      "value": "http://localhost:8083"
+    },
+    {
+      "key": "claimsBaseUrl",
+      "value": "http://localhost:8084"
+    },
+    {
+      "key": "notificationBaseUrl",
+      "value": "http://localhost:8085"
+    },
+    {
+      "key": "eligibilityBaseUrl",
+      "value": "http://localhost:8086"
+    },
+    {
+      "key": "communicationPreferenceBaseUrl",
+      "value": "http://localhost:8087"
+    },
+    {
+      "key": "ivrSessionBaseUrl",
+      "value": "http://localhost:8089"
+    },
+    {
+      "key": "customerPhone",
+      "value": "9876543210"
+    },
+    {
+      "key": "customerId",
+      "value": "1"
+    },
+    {
+      "key": "policyNumber",
+      "value": "POL-10001"
+    },
+    {
+      "key": "claimId",
+      "value": "PASTE_CLAIM_ID_HERE"
+    },
+    {
+      "key": "ivrRequestId",
+      "value": "ivr-demo-1001"
+    }
+  ],
+  "item": [
+    {
+      "name": "Gateway APIs",
+      "item": [
+        {
+          "name": "Customer - Get by Phone",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/customers/search?phone={{customerPhone}}",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "customers",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "phone",
+                  "value": "{{customerPhone}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Policy - Get by Customer ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/policies?customerId={{customerId}}",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "policies"
+              ],
+              "query": [
+                {
+                  "key": "customerId",
+                  "value": "{{customerId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Claims - Create Claim",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code >= 200 && pm.response.code < 300) {",
+                  "  const json = pm.response.json();",
+                  "  if (json.claimId) {",
+                  "    pm.collectionVariables.set('claimId', json.claimId);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": 1,\n  \"policyNumber\": \"POL-10001\",\n  \"description\": \"Hospitalization claim from IVR\"\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/claims",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "claims"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Claims - Get by Customer ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/claims?customerId={{customerId}}",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "claims"
+              ],
+              "query": [
+                {
+                  "key": "customerId",
+                  "value": "{{customerId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Claims - Get by Claim ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/claims/{{claimId}}",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "claims",
+                "{{claimId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Claims - Update Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"APPROVED\"\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/claims/{{claimId}}/status",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "claims",
+                "{{claimId}}",
+                "status"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Eligibility - Verify",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/eligibility/verify?customerId={{customerId}}&policyNumber={{policyNumber}}",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "eligibility",
+                "verify"
+              ],
+              "query": [
+                {
+                  "key": "customerId",
+                  "value": "{{customerId}}"
+                },
+                {
+                  "key": "policyNumber",
+                  "value": "{{policyNumber}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Eligibility - Upsert",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": 1,\n  \"policyNumber\": \"POL-10001\",\n  \"planCode\": \"HMO-GOLD\",\n  \"coverageStatus\": \"ACTIVE\",\n  \"effectiveDate\": \"2026-04-01\",\n  \"expiryDate\": \"2027-03-31\",\n  \"deductibleRemaining\": 1200.00,\n  \"copayPercentage\": 20.00,\n  \"networkCode\": \"NATIONAL\"\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/eligibility",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "eligibility"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Communication Preferences - Get",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/communication-preferences/{{customerId}}",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "communication-preferences",
+                "{{customerId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Communication Preferences - Upsert",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": 1,\n  \"preferredChannel\": \"SMS\",\n  \"smsOptIn\": true,\n  \"emailOptIn\": true,\n  \"voiceOptIn\": true,\n  \"quietHoursStart\": \"22:00:00\",\n  \"quietHoursEnd\": \"07:00:00\",\n  \"escalationChannel\": \"EMAIL\",\n  \"languageCode\": \"en\"\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/communication-preferences",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "communication-preferences"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Communication Preferences - Resolve Channel",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": 1,\n  \"requestedChannel\": \"SMS\",\n  \"eventType\": \"CLAIM_CREATED\"\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/communication-preferences/resolve",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "communication-preferences",
+                "resolve"
+              ]
+            }
+          }
+        },
+        {
+          "name": "IVR Sessions - Open",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"requestId\": \"{{ivrRequestId}}\",\n  \"phone\": \"{{customerPhone}}\",\n  \"intent\": \"CLAIM_STATUS\"\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/ivr-sessions",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ivr-sessions"
+              ]
+            }
+          }
+        },
+        {
+          "name": "IVR Sessions - Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": 1,\n  \"selectedPolicyNumber\": \"POL-10001\",\n  \"lastSummary\": \"Customer selected active policy for claim review\"\n}"
+            },
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/ivr-sessions/{{ivrRequestId}}",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ivr-sessions",
+                "{{ivrRequestId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "IVR Sessions - Get",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/ivr-sessions/{{ivrRequestId}}",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ivr-sessions",
+                "{{ivrRequestId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "IVR Sessions - Complete",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/ivr-sessions/{{ivrRequestId}}/complete?summary=IVR%20call%20completed%20successfully",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ivr-sessions",
+                "{{ivrRequestId}}",
+                "complete"
+              ],
+              "query": [
+                {
+                  "key": "summary",
+                  "value": "IVR call completed successfully"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Notifications - Get All",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/notifications",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notifications"
+              ]
+            }
+          }
+        },
+        {
+          "name": "IVR - Aggregated Response",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-IVR-Request-ID",
+                "value": "{{ivrRequestId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gatewayBaseUrl}}/api/ivr/respond?phone={{customerPhone}}",
+              "host": [
+                "{{gatewayBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ivr",
+                "respond"
+              ],
+              "query": [
+                {
+                  "key": "phone",
+                  "value": "{{customerPhone}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Direct Service APIs",
+      "item": [
+        {
+          "name": "Customer Direct - Get by Phone",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{customerBaseUrl}}/api/customers/search?phone={{customerPhone}}",
+              "host": [
+                "{{customerBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "customers",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "phone",
+                  "value": "{{customerPhone}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Policy Direct - Get by Customer ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{policyBaseUrl}}/api/policies?customerId={{customerId}}",
+              "host": [
+                "{{policyBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "policies"
+              ],
+              "query": [
+                {
+                  "key": "customerId",
+                  "value": "{{customerId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Claims Direct - Create Claim",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": 1,\n  \"policyNumber\": \"POL-10001\",\n  \"description\": \"Direct claim creation test\"\n}"
+            },
+            "url": {
+              "raw": "{{claimsBaseUrl}}/api/claims",
+              "host": [
+                "{{claimsBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "claims"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Claims Direct - Get by Customer ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{claimsBaseUrl}}/api/claims?customerId={{customerId}}",
+              "host": [
+                "{{claimsBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "claims"
+              ],
+              "query": [
+                {
+                  "key": "customerId",
+                  "value": "{{customerId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Eligibility Direct - Verify",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{eligibilityBaseUrl}}/api/eligibility/verify?customerId={{customerId}}&policyNumber={{policyNumber}}",
+              "host": [
+                "{{eligibilityBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "eligibility",
+                "verify"
+              ],
+              "query": [
+                {
+                  "key": "customerId",
+                  "value": "{{customerId}}"
+                },
+                {
+                  "key": "policyNumber",
+                  "value": "{{policyNumber}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Eligibility Direct - Upsert",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": 1,\n  \"policyNumber\": \"POL-10001\",\n  \"planCode\": \"HMO-GOLD\",\n  \"coverageStatus\": \"ACTIVE\",\n  \"effectiveDate\": \"2026-04-01\",\n  \"expiryDate\": \"2027-03-31\",\n  \"deductibleRemaining\": 1200.00,\n  \"copayPercentage\": 20.00,\n  \"networkCode\": \"NATIONAL\"\n}"
+            },
+            "url": {
+              "raw": "{{eligibilityBaseUrl}}/api/eligibility",
+              "host": [
+                "{{eligibilityBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "eligibility"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Communication Preferences Direct - Get",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{communicationPreferenceBaseUrl}}/api/communication-preferences/{{customerId}}",
+              "host": [
+                "{{communicationPreferenceBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "communication-preferences",
+                "{{customerId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Communication Preferences Direct - Upsert",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": 1,\n  \"preferredChannel\": \"SMS\",\n  \"smsOptIn\": true,\n  \"emailOptIn\": true,\n  \"voiceOptIn\": true,\n  \"quietHoursStart\": \"22:00:00\",\n  \"quietHoursEnd\": \"07:00:00\",\n  \"escalationChannel\": \"EMAIL\",\n  \"languageCode\": \"en\"\n}"
+            },
+            "url": {
+              "raw": "{{communicationPreferenceBaseUrl}}/api/communication-preferences",
+              "host": [
+                "{{communicationPreferenceBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "communication-preferences"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Communication Preferences Direct - Resolve Channel",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": 1,\n  \"requestedChannel\": \"SMS\",\n  \"eventType\": \"CLAIM_CREATED\"\n}"
+            },
+            "url": {
+              "raw": "{{communicationPreferenceBaseUrl}}/api/communication-preferences/resolve",
+              "host": [
+                "{{communicationPreferenceBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "communication-preferences",
+                "resolve"
+              ]
+            }
+          }
+        },
+        {
+          "name": "IVR Sessions Direct - Open",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"requestId\": \"{{ivrRequestId}}\",\n  \"phone\": \"{{customerPhone}}\",\n  \"intent\": \"CLAIM_STATUS\"\n}"
+            },
+            "url": {
+              "raw": "{{ivrSessionBaseUrl}}/api/ivr-sessions",
+              "host": [
+                "{{ivrSessionBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ivr-sessions"
+              ]
+            }
+          }
+        },
+        {
+          "name": "IVR Sessions Direct - Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": 1,\n  \"selectedPolicyNumber\": \"POL-10001\",\n  \"lastSummary\": \"Customer selected active policy for claim review\"\n}"
+            },
+            "url": {
+              "raw": "{{ivrSessionBaseUrl}}/api/ivr-sessions/{{ivrRequestId}}",
+              "host": [
+                "{{ivrSessionBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ivr-sessions",
+                "{{ivrRequestId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "IVR Sessions Direct - Get",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{ivrSessionBaseUrl}}/api/ivr-sessions/{{ivrRequestId}}",
+              "host": [
+                "{{ivrSessionBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ivr-sessions",
+                "{{ivrRequestId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "IVR Sessions Direct - Complete",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{ivrSessionBaseUrl}}/api/ivr-sessions/{{ivrRequestId}}/complete?summary=IVR%20call%20completed%20successfully",
+              "host": [
+                "{{ivrSessionBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ivr-sessions",
+                "{{ivrRequestId}}",
+                "complete"
+              ],
+              "query": [
+                {
+                  "key": "summary",
+                  "value": "IVR call completed successfully"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Notification Direct - Get All",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{notificationBaseUrl}}/api/notifications",
+              "host": [
+                "{{notificationBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notifications"
+              ]
+            }
+          }
+        },
+        {
+          "name": "IVR Direct - Aggregated Response",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-IVR-Request-ID",
+                "value": "{{ivrRequestId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{orchestratorBaseUrl}}/api/ivr/respond?phone={{customerPhone}}",
+              "host": [
+                "{{orchestratorBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ivr",
+                "respond"
+              ],
+              "query": [
+                {
+                  "key": "phone",
+                  "value": "{{customerPhone}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Actuator",
+      "item": [
+        {
+          "name": "Gateway Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{gatewayBaseUrl}}/actuator/health"
+          }
+        },
+        {
+          "name": "Orchestrator Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{orchestratorBaseUrl}}/actuator/health"
+          }
+        },
+        {
+          "name": "Customer Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{customerBaseUrl}}/actuator/health"
+          }
+        },
+        {
+          "name": "Policy Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{policyBaseUrl}}/actuator/health"
+          }
+        },
+        {
+          "name": "Claims Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{claimsBaseUrl}}/actuator/health"
+          }
+        },
+        {
+          "name": "Notification Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{notificationBaseUrl}}/actuator/health"
+          }
+        },
+        {
+          "name": "Eligibility Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{eligibilityBaseUrl}}/actuator/health"
+          }
+        },
+        {
+          "name": "Communication Preference Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{communicationPreferenceBaseUrl}}/actuator/health"
+          }
+        },
+        {
+          "name": "IVR Session Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{ivrSessionBaseUrl}}/actuator/health"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: ivr-orchestrator-service
+  datasource:
+    url: jdbc:mysql://localhost:3311/ivrdb
+    username: root
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      ivrAggregator:
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        wait-duration-in-open-state: 15s
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 2s
+        slow-call-rate-threshold: 50
+  retry:
+    instances:
+      ivrAggregator:
+        max-attempts: 3
+        wait-duration: 500ms
+  ratelimiter:
+    instances:
+      ivrAggregator:
+        limit-for-period: 50
+        limit-refresh-period: 1s
+        timeout-duration: 0
+  timelimiter:
+    instances:
+      ivrAggregator:
+        timeout-duration: 3s
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 1000
+        readTimeout: 2000

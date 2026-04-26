@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="config-server" />
+        <module name="ivr-orchestrator-service" />
+        <module name="discovery-server" />
+        <module name="policy-service" />
+        <module name="customer-service" />
+        <module name="communication-preference-service" />
+        <module name="api-gateway" />
+        <module name="claims-service" />
+        <module name="notification-service" />
+        <module name="eligibility-service" />
+        <module name="ivr-session-service" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="api-gateway" options="-parameters" />
+      <module name="claims-service" options="-parameters" />
+      <module name="communication-preference-service" options="-parameters" />
+      <module name="config-server" options="-parameters" />
+      <module name="customer-service" options="-parameters" />
+      <module name="discovery-server" options="-parameters" />
+      <module name="eligibility-service" options="-parameters" />
+      <module name="ivr-orchestrator-service" options="-parameters" />
+      <module name="ivr-session-service" options="-parameters" />
+      <module name="notification-service" options="-parameters" />
+      <module name="policy-service" options="-parameters" />
+    </option>
+  </component>
+</project>

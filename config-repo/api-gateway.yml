@@ -1,0 +1,43 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      routes:
+        - id: ivr-orchestrator
+          uri: lb://ivr-orchestrator-service
+          predicates:
+            - Path=/api/ivr/**
+        - id: ivr-session-service
+          uri: lb://ivr-session-service
+          predicates:
+            - Path=/api/ivr-sessions/**
+        - id: customer-service
+          uri: lb://customer-service
+          predicates:
+            - Path=/api/customers/**
+        - id: policy-service
+          uri: lb://policy-service
+          predicates:
+            - Path=/api/policies/**
+        - id: claims-service
+          uri: lb://claims-service
+          predicates:
+            - Path=/api/claims/**
+        - id: eligibility-service
+          uri: lb://eligibility-service
+          predicates:
+            - Path=/api/eligibility/**
+        - id: communication-preference-service
+          uri: lb://communication-preference-service
+          predicates:
+            - Path=/api/communication-preferences/**
+        - id: notification-service
+          uri: lb://notification-service
+          predicates:
+            - Path=/api/notifications/**

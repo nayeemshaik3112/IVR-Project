@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: communication-preference-service
+  config:
+    import: optional:configserver:http://localhost:8888
+  cloud:
+    config:
+      fail-fast: false
+  datasource:
+    url: jdbc:mysql://localhost:3313/communicationdb
+    username: root
+    password: root
+  jpa:
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+  sql:
+    init:
+      mode: always
