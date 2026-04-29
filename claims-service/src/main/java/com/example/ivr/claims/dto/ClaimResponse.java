@@ -4,7 +4,7 @@ import java.time.Instant;
 
 public record ClaimResponse(
         String claimId,
-        Long customerId,
+        String customerId,
         String policyNumber,
         String status,
         String description,

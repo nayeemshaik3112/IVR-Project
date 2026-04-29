@@ -1,89 +1,54 @@
 package com.example.ivr.claims.query.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.*;
+
 import java.time.Instant;
 
 @Entity
-@Table(name = "claim_view")
+@Table(
+        name = "claim_view",
+        indexes = {
+                // ✅ NEW — unique index on idempotency_key to prevent duplicates at DB level
+                @Index(name = "uk_idempotency_key", columnList = "idempotency_key", unique = true)
+        }
+)
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ClaimView {
 
     @Id
+    @Column(name = "claim_id")
     private String claimId;
 
-    @Column(nullable = false)
-    private Long customerId;
+    @Column(name = "customer_id")
+    private String customerId;
 
-    @Column(nullable = false)
+    @Column(name = "policy_number")
     private String policyNumber;
 
-    @Column(nullable = false)
-    private String status;
-
-    @Column(nullable = false, length = 2000)
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(nullable = false)
+    @Column(name = "claim_type")
+    private String claimType;
+
+    @Column(name = "amount")
+    private Double amount;
+
+    @Column(name = "status")
+    private String status;
+
+    @Column(name = "created_at")
     private Instant createdAt;
 
-    @Column(nullable = false)
+    @Column(name = "updated_at")
     private Instant updatedAt;
 
-    public String getClaimId() {
-        return claimId;
-    }
-
-    public void setClaimId(String claimId) {
-        this.claimId = claimId;
-    }
-
-    public Long getCustomerId() {
-        return customerId;
-    }
-
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
-    }
-
-    public String getPolicyNumber() {
-        return policyNumber;
-    }
-
-    public void setPolicyNumber(String policyNumber) {
-        this.policyNumber = policyNumber;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+    // ✅ NEW COLUMN — stores the idempotency key from client
+    @Column(name = "idempotency_key", unique = true)
+    private String idempotencyKey;
 }

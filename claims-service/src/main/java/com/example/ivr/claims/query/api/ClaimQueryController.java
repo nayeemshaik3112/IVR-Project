@@ -19,8 +19,9 @@ public class ClaimQueryController {
         this.claimQueryService = claimQueryService;
     }
 
+    // ✅ FIX 3: Changed Long → String (customerId is String throughout system)
     @GetMapping
-    public List<ClaimResponse> getClaims(@RequestParam Long customerId) {
+    public List<ClaimResponse> getClaims(@RequestParam String customerId) {
         return claimQueryService.getClaimsByCustomerId(customerId);
     }
 

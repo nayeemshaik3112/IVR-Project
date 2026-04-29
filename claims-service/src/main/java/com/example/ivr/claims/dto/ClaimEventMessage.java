@@ -5,7 +5,7 @@ import java.time.Instant;
 public record ClaimEventMessage(
         String eventId,
         String claimId,
-        Long customerId,
+        String customerId,   // ✅ FIX: Long → String (matches ClaimCreatedEvent)
         String policyNumber,
         String status,
         String description,

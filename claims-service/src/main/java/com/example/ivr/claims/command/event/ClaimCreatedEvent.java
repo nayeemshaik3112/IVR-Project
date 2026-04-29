@@ -1,51 +1,27 @@
 package com.example.ivr.claims.command.event;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import java.time.Instant;
 
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ClaimCreatedEvent {
 
-    private final String claimId;
-    private final Long customerId;
-    private final String policyNumber;
-    private final String description;
-    private final String status;
-    private final Instant occurredAt;
+    private String claimId;
+    private String customerId;
+    private String policyNumber;
+    private String description;
+    private String claimType;
+    private Double amount;
+    private String status;
+    private Instant occurredAt;
 
-    public ClaimCreatedEvent(String claimId,
-                             Long customerId,
-                             String policyNumber,
-                             String description,
-                             String status,
-                             Instant occurredAt) {
-        this.claimId = claimId;
-        this.customerId = customerId;
-        this.policyNumber = policyNumber;
-        this.description = description;
-        this.status = status;
-        this.occurredAt = occurredAt;
-    }
-
-    public String getClaimId() {
-        return claimId;
-    }
-
-    public Long getCustomerId() {
-        return customerId;
-    }
-
-    public String getPolicyNumber() {
-        return policyNumber;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public Instant getOccurredAt() {
-        return occurredAt;
-    }
+    // ✅ NEW FIELD — carries idempotency key through to projection
+    private String idempotencyKey;
 }

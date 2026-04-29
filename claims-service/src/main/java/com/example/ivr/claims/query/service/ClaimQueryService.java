@@ -15,8 +15,10 @@ public class ClaimQueryService {
         this.claimViewRepository = claimViewRepository;
     }
 
-    public List<ClaimResponse> getClaimsByCustomerId(Long customerId) {
-        return claimViewRepository.findByCustomerIdOrderByUpdatedAtDesc(customerId).stream()
+    // ✅ FIX 2: Changed Long → String (matches ClaimView.customerId type)
+    // ✅ FIX 2: Changed method to findByCustomerId (exists in repository)
+    public List<ClaimResponse> getClaimsByCustomerId(String customerId) {
+        return claimViewRepository.findByCustomerId(customerId).stream()
                 .map(this::toResponse)
                 .toList();
     }

@@ -1,35 +1,26 @@
 package com.example.ivr.claims.command.command;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.axonframework.modelling.command.TargetAggregateIdentifier;
 
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class CreateClaimCommand {
 
     @TargetAggregateIdentifier
-    private final String claimId;
-    private final Long customerId;
-    private final String policyNumber;
-    private final String description;
+    private String claimId;
 
-    public CreateClaimCommand(String claimId, Long customerId, String policyNumber, String description) {
-        this.claimId = claimId;
-        this.customerId = customerId;
-        this.policyNumber = policyNumber;
-        this.description = description;
-    }
+    private String customerId;
+    private String policyNumber;
+    private String description;
+    private String claimType;
+    private Double amount;
 
-    public String getClaimId() {
-        return claimId;
-    }
-
-    public Long getCustomerId() {
-        return customerId;
-    }
-
-    public String getPolicyNumber() {
-        return policyNumber;
-    }
-
-    public String getDescription() {
-        return description;
-    }
+    // ✅ NEW FIELD — idempotency key from client
+    private String idempotencyKey;
 }
